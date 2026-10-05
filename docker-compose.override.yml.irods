@@ -45,15 +45,11 @@ services:
     restart: unless-stopped
     shm_size: '2gb'
     volumes:
-      - type: bind  # iRODS configuration
-        source: ./config/irods/etc
-        target: /etc/irods
-      - type: bind  # Traefik configuration for shared certs
-        source: ./config/traefik/tls
-        target: /etc/traefik/tls
-      - type: bind  # Log files
-        source: ./volumes/irods/log
-        target: /var/log/irods
-      - type: bind  # File storage
-        source: ./volumes/irods/vault
-        target: /data/Vault
+      # iRODS configuration
+      - ./config/irods/etc:/etc/irods:z,U
+      # Traefik configuration for shared certs
+      - ./config/traefik/tls:/etc/traefik/tls:z,U
+      # Log files
+      - ./volumes/irods/log:/var/log/irods:z,U
+      # File storage
+      - ./volumes/irods/vault:/data/Vault:z,U

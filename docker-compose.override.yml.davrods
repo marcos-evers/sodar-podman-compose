@@ -23,12 +23,9 @@ services:
     restart: unless-stopped
     shm_size: '2gb'
     volumes:
-      - type: bind
-        source: ./config/davrods/theme
-        target: /etc/apache2/irods/theme
-      - type: bind  # Traefik configuration for shared certs
-        source: ./config/traefik/tls
-        target: /etc/traefik/tls
+      - ./config/davrods/theme:/etc/apache2/irods/theme:z,U
+      # Traefik configuration for shared certs
+      - ./config/traefik/tls:/etc/traefik/tls:z,U
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.xforward.headers.customrequestheaders.X-Forwarded-Proto=https"

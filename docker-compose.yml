@@ -130,27 +130,22 @@ services:
   traefik:
     image: traefik:v3.7
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     networks:
       - sodar
     restart: unless-stopped
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:8080"
+      - "--entrypoints.websecure.address=:8443"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
     volumes:
-      - type: bind
-        source: ./volumes/traefik/letsencrypt
-        target: /letsencrypt
-      - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
-        read_only: true
+      - ./volumes/traefik/letsencrypt:/letsencrypt:z,U
+      - /run/run/user/1000/podman/podman.sock:/var/run/docker.sock
 
   postgres:
     image: postgres:16
@@ -168,9 +163,7 @@ services:
       - sodar
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: ./volumes/postgres/data
-        target: /var/lib/postgresql/data
+      - ./volumes/postgres/data:/var/lib/postgresql/data:z,U
 
   redis:
     image: redis:8
@@ -178,9 +171,7 @@ services:
       - sodar
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: ./volumes/redis/data
-        target: /data
+      - ./volumes/redis/data:/data:z,U
 
   sodar-web:
     <<: *default-sodar
@@ -199,18 +190,14 @@ services:
       - "traefik.http.services.sodar-web.loadbalancer.server.port=8080"
       - "traefik.http.routers.sodar-web.tls=true"
     volumes:
-      - type: bind  # Template include dir
-        source: ./config/sodar/templates
-        target: /usr/src/app/sodar/templates/include
-      - type: bind  # Samplesheets config dir
-        source: ./config/sodar/samplesheets
-        target: /usr/src/app/samplesheets/config
-      - type: bind  # Traefik configuration for shared certs
-        source: ./config/traefik/tls
-        target: /etc/traefik/tls
-      - type: bind  # LDAP CA certificates
-        source: ./config/ldap
-        target: /etc/ssl/certs
+      # Template include dir
+      - ./config/sodar/templates:/usr/src/app/sodar/templates/include:z,U
+      # Samplesheets config dir
+      - ./config/sodar/samplesheets:/usr/src/app/samplesheets/config:z,U
+      # Traefik configuration for shared certs
+      - ./config/traefik/tls:/etc/traefik/tls:z,U
+      # LDAP CA certificates
+      - ./config/ldap:/etc/ssl/certs:z,U
 
   sodar-celerybeat:
     <<: *default-sodar
@@ -234,9 +221,7 @@ services:
       - sodar
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: ./config/sodar
-        target: /etc/sodar
+      - ./config/sodar:/etc/sodar:z,U
 
 networks:
   sodar:

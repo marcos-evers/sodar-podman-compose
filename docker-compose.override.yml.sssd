@@ -5,16 +5,11 @@ services:
     networks:
       - sodar
     volumes:
-      - type: bind  # SSSD config, copied to /etc/sssd
-        source: ./config/sssd/sssd.conf
-        target: /etc/sssd/sssd.conf
-        read_only: true
-      - type: volume
-        source: sssd-sockets
-        target: /var/lib/sss
-      - type: bind  # LDAP CA certificates
-        source: ./config/ldap
-        target: /etc/ssl/certs
+      # SSSD config, copied to /etc/sssd
+      - ./config/sssd/sssd.conf:/etc/sssd/sssd.conf:z
+      - sssd-sockets:/var/lib/sss
+      # LDAP CA certificates
+      - ./config/ldap:/etc/ssl/certs:z,U
   irods:
     image: ghcr.io/bihealth/irods-docker:${IRODS_VERSION}-sssd
     ports:
@@ -54,21 +49,15 @@ services:
     networks:
       - sodar
     volumes:
-      - type: bind  # iRODS configuration
-        source: ./config/irods/etc
-        target: /etc/irods
-      - type: bind  # Traefik configuration for shared certs
-        source: ./config/traefik/tls
-        target: /etc/traefik/tls
-      - type: bind  # Log files
-        source: ./volumes/irods/log
-        target: /var/log/irods
-      - type: bind  # mass data files
-        source: ./volumes/irods/vault
-        target: /data/Vault
-      - type: volume
-        source: sssd-sockets
-        target: /var/lib/sss
+      # iRODS configuration
+      - ./config/irods/etc:/etc/irods:z,U
+      # Traefik configuration for shared certs
+      - ./config/traefik/tls:/etc/traefik/tls
+      # Log files
+      - ./volumes/irods/log:/var/log/irods:z,U
+      # mass data files
+      - ./volumes/irods/vault:/data/Vault:z,U
+      - sssd-sockets:/var/lib/sss
 
 volumes:
   sssd-sockets:

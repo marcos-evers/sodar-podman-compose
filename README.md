@@ -48,7 +48,7 @@ Edit the `/etc/hosts` file and add the following line:
 ```bash
 $ sudo vi /etc/hosts
 
-127.0.0.1 sodar.local
+127.0.0.1 localhost:8443
 ```
 
 This is needed as certain SODAR features require a fully qualified domain name for the host.
@@ -113,7 +113,7 @@ $ docker exec -it sodar-docker-compose-sodar-web-1 python /usr/src/app/manage.py
 
 ### 7. Use SODAR
 
-You can now navigate to the SODAR website at `https://sodar.local/` on your web browser. Please note that SODAR officially supports the Mozilla Firefox and Google Chrome browsers.
+You can now navigate to the SODAR website at `https://localhost:8443/` on your web browser. Please note that SODAR officially supports the Mozilla Firefox and Google Chrome browsers.
 
 The browser will warn you about self-signed certificates and you will need to allow access according to the browser's instructions.
 
